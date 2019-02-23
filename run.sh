@@ -4,5 +4,5 @@ OC="oc --insecure-skip-tls-verify --token=${OPENSHIFT_TOKEN} --server=${OPENSHIF
 
 oc get projects --no-headers -o custom-columns=name:.metadata.name | while read project; do
   PROJECT=$project
-  . run-in-cli.sh
+  . exec-in-cli.sh
 done
