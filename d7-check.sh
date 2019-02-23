@@ -2,12 +2,13 @@
 
 set -eu -o pipefail
 
-d7Status="$(drush status --fields=drupal-version 2> /dev/null)"
-d7RestwsInfo="$(drush pm-info --fields=status,version restws 2> /dev/null)"
-d7ServicesInfo="$(drush pm-info --fields=status,version services 2> /dev/null)"
+d7Status="$(drush status --fields=drupal-version)"
+pmlist=$(drush pm-list)
+d7RestwsInfo="$(echo "$pmlist" | grep \(restws\))"
+d7ServicesInfo="$(echo "$pmlist" | grep \(services\))"
 
-function disableContrib() {
-  d7LinkInfo="$(drush pm-info --fields=version link 2> /dev/null)"
+function checkD7Contrib() {
+  d7LinkInfo="$(echo "$pmlist" | grep \(link\))"
   if [[ $d7LinkInfo == *enabled* ]] && [[ $d7LinkInfo != *7.x-1.6* ]]
   then
     echo "$LAGOON_PROJECT-$LAGOON_GIT_SAFE_BRANCH: link is not version 7.x-1.6, is vulnerable"
@@ -36,7 +37,7 @@ then
     # drush pm-disable -y restws
   else
     echo "$LAGOON_PROJECT-$LAGOON_GIT_SAFE_BRANCH: restws is version 7.x-2.8, checking contrib modules"
-    disableContrib
+    checkD7Contrib
   fi
 
 else
