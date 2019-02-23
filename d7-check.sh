@@ -1,44 +1,44 @@
 #!/usr/bin/env bash
 
-echo 'Drupal SA-CORE-2019-003 auto disable script for 7x.x'
+set -eu -o pipefail
 
-d7Status="$(drush status --fields=drupal-version)"
-d7RestwsInfo="$(drush pm-info --fields=status,version restws)"
-d7ServicesInfo="$(drush pm-info --fields=status,version services)"
+d7Status="$(drush status --fields=drupal-version 2> /dev/null)"
+d7RestwsInfo="$(drush pm-info --fields=status,version restws 2> /dev/null)"
+d7ServicesInfo="$(drush pm-info --fields=status,version services 2> /dev/null)"
 
 function disableContrib() {
-  d7LinkInfo="$(drush pm-info --fields=version link)"
-  if [[ $d7LinkInfo != *7.x-1.6* ]]
+  d7LinkInfo="$(drush pm-info --fields=version link 2> /dev/null)"
+  if [[ $d7LinkInfo == *enabled* ]] && [[ $d7LinkInfo != *7.x-1.6* ]]
   then
-    echo 'link is not version 7.x-1.6, disabling'
-    drush pm-disable -y link
+    echo "$LAGOON_PROJECT-$LAGOON_GIT_SAFE_BRANCH: link is not version 7.x-1.6, is vulnerable"
+    # drush pm-disable -y link
   fi
 }
 
-# Only need to disable modules if services or rest are installed and vulnerable
-if [[ $d7RestwsInfo == *enabled* ]] || [[ $d7Servicesinfo == *enabled* ]]
+# Services itself is not vulnerable, but if it's enabled, we need to check
+# contrib modules
+if [[ $d7ServicesInfo == *enabled* ]]
 then
-  echo 'services or restws enabled, checking versions'
+  echo "$LAGOON_PROJECT-$LAGOON_GIT_SAFE_BRANCH: services enabled, checking contrib modules"
+  disableContrib
+else
+  echo "$LAGOON_PROJECT-$LAGOON_GIT_SAFE_BRANCH: services is not enabled"
+fi
 
-  # Services itself is not vulnerable, but if it's enabled, we need to check
-  # contrib modules
-  if [[ $d7Servicesinfo == *enabled* ]]
-  then
-    echo 'services enabled, checking contrib modules'
-    disableContrib
-  fi
-
+# Check for enabled or vulnerable version of restws
+if [[ $d7RestwsInfo == *enabled* ]]
+then
   # RestWS should be disabled if vulnerable, but if fixed we still need to check
   # contrib modules
   if [[ $d7RestwsInfo != *7.x-2.8* ]]
   then
-    echo 'restws is not version 7.x-2.8, disabling'
-    drush pm-disable -y restws
+    echo "$LAGOON_PROJECT-$LAGOON_GIT_SAFE_BRANCH: restws is not version 7.x-2.8, is vulnerable"
+    # drush pm-disable -y restws
   else
-    echo 'restws is version 7.x-2.8, checking contrib modules'
+    echo "$LAGOON_PROJECT-$LAGOON_GIT_SAFE_BRANCH: restws is version 7.x-2.8, checking contrib modules"
     disableContrib
   fi
 
 else
-  echo 'services and restws are disabled, doing nothing'
+  echo "$LAGOON_PROJECT-$LAGOON_GIT_SAFE_BRANCH: restws is not enabled"
 fi
