@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OC="oc --insecure-skip-tls-verify --token=${OPENSHIFT_TOKEN} --server=${OPENSHIFT_CONSOLE}"
+OC="oc"
 
 echo "${PROJECT}: starting =================================================================="
 
@@ -34,14 +34,9 @@ if [[ ! $POD ]]; then
   exit 1
 fi
 
-# If no container defined, load the name of the first container
-if [[ -z ${CONTAINER} ]]; then
-  CONTAINER=$(${OC} -n ${PROJECT} get pod ${POD} -o json | jq --raw-output '.spec.containers[0].name')
-fi
-
 
 check=$(<modules-check.sh)
-${OC} -n ${PROJECT} exec ${POD} -c ${CONTAINER} -- bash -c "$check"
+${OC} -n ${PROJECT} exec ${POD} -- bash -c "$check"
 
 
 if [[ "$SCALED" == 'true' ]]; then
