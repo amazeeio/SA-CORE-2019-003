@@ -3,7 +3,7 @@
 
 set -eu -o pipefail
 
-check=$(<d8-check.sh)
+check=$(<modules-check.sh)
 for dir in /var/www/*
 do
   user=${dir#/var/www/}
