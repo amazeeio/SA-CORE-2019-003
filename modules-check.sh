@@ -4,12 +4,12 @@ set -eu -o pipefail
 
 drupalStatus="$(drush status --fields=drupal-version 2> /dev/null)"
 
-if [[ $drupalStatus =~ \s8\.\d+\.\d+ ]]
+if [[ "$drupalStatus" =~ 8\.[0-9]+\.[0-9]+ ]]
 then
-  # run d8-check.sh or copy inline
+  echo "drupal8"
 fi
 
-if [[ $drupalStatus =~ \s7\.\d+ ]]
+if [[ "$drupalStatus" =~ 7\.[0-9]+ ]]
 then
-  # run d8-check.sh or copy inline
+  echo "drupal7"
 fi
