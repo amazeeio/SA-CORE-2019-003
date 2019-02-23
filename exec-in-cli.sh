@@ -20,6 +20,7 @@ if ${OC} -n ${PROJECT} get deploymentconfig cli &> /dev/null; then
       printf "."
     done
     SCALED=true
+    printf "\n"
   fi
 else
   echo "${PROJECT}: no deploymentconfig for cli found, assuming this is not a drupal site"
@@ -38,7 +39,7 @@ if [[ -z ${CONTAINER} ]]; then
   CONTAINER=$(${OC} -n ${PROJECT} get pod ${POD} -o json | jq --raw-output '.spec.containers[0].name')
 fi
 
-printf "\n"
+
 check=$(<d8-check.sh)
 ${OC} -n ${PROJECT} exec ${POD} -c ${CONTAINER} -- bash -c "$check"
 
