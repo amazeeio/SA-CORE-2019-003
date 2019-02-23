@@ -40,7 +40,7 @@ if [[ -z ${CONTAINER} ]]; then
 fi
 
 
-check=$(<d8-check.sh)
+check=$(<modules-check.sh)
 ${OC} -n ${PROJECT} exec ${POD} -c ${CONTAINER} -- bash -c "$check"
 
 
