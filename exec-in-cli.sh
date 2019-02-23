@@ -39,10 +39,11 @@ if [[ -z ${CONTAINER} ]]; then
 fi
 
 printf "\n"
-${OC} -n ${PROJECT} exec ${POD} -c ${CONTAINER} -- sh -c "drush status drupal-version --format=list"
+check=$(<d8-check.sh)
+${OC} -n ${PROJECT} exec ${POD} -c ${CONTAINER} -- bash -c "$check"
 
 
-if [[ $SCALED == 'true' ]]; then
+if [[ "$SCALED" == 'true' ]]; then
     ${OC} -n ${PROJECT} scale --replicas=0 ${DEPLOYMENTCONFIG} >/dev/null 2>&1
 fi
 
