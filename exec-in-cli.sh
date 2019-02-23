@@ -2,7 +2,7 @@
 
 OC="oc --insecure-skip-tls-verify --token=${OPENSHIFT_TOKEN} --server=${OPENSHIFT_CONSOLE}"
 
-echo "${PROJECT}: starting"
+echo "${PROJECT}: starting =================================================================="
 
 # If there is a deploymentconfig for the given service
 if ${OC} -n ${PROJECT} get deploymentconfig cli &> /dev/null; then
@@ -48,4 +48,4 @@ if [[ "$SCALED" == 'true' ]]; then
     ${OC} -n ${PROJECT} scale --replicas=0 ${DEPLOYMENTCONFIG} >/dev/null 2>&1
 fi
 
-echo "${PROJECT}: finished"
+echo "${PROJECT}: finished =================================================================="
