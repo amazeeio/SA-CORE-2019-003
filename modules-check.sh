@@ -7,7 +7,7 @@ drupalStatus="$(drush status --fields=drupal-version 2> /dev/null)"
 if [[ "$drupalStatus" =~ 8\.[0-9]+\.[0-9]+ ]]
 then
   echo "$LAGOON_PROJECT$AMAZEEIO_SITE_GROUP-$LAGOON_GIT_SAFE_BRANCH$AMAZEEIO_SITE_BRANCH: found Drupal 8"
-  pmlist=$(drush pm-list)
+  pmlist=$(COLUMNS=200 drush pm-list)
   d8RestInfo="$(echo "$pmlist" | grep \(rest\))"
   d8JsonapiInfo="$(echo "$pmlist" | grep \(jsonapi\))"
 
