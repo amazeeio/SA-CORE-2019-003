@@ -36,7 +36,7 @@ fi
 
 
 check=$(<modules-check.sh)
-${OC} -n ${PROJECT} exec ${POD} -- bash -c "$check"
+${OC} -n ${PROJECT} exec ${POD} -- bash -c "$check" || true
 
 
 if [[ "$SCALED" == 'true' ]]; then
