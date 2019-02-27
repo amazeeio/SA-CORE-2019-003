@@ -14,10 +14,17 @@ if ${OC} -n ${PROJECT} get deploymentconfig cli &> /dev/null; then
     ${OC} -n ${PROJECT} scale --replicas=1 ${DEPLOYMENTCONFIG} >/dev/null 2>&1
     printf "${PROJECT}: scaling cli to 1 replica"
     # Wait until the scaling is done
+    COUNTER=0
     while [[ ! $(${OC} -n ${PROJECT} get ${DEPLOYMENTCONFIG} -o go-template --template='{{.status.readyReplicas}}') == "1" ]]
     do
+      if [[ $COUNTER -gt 60 ]]; then
+        printf "\n"
+        echo "${PROJECT}: could not start cli pod, continuing"
+        break
+      fi
       sleep 1
       printf "."
+      let COUNTER=COUNTER+1
     done
     SCALED=true
     printf "\n"
@@ -31,7 +38,7 @@ POD=$(${OC} -n ${PROJECT} get pods -l service=cli -o json | jq -r '.items[] | se
 
 if [[ ! $POD ]]; then
   echo "${PROJECT}: No running pod found for service cli"
-  exit 1
+  continue
 fi
 
 
